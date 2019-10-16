@@ -1,10 +1,11 @@
 import cv2
 import numpy as np
+import keyboard
 from matplotlib import pyplot as plt
 cap = cv2.VideoCapture(0)
  
 if (cap.isOpened() == False): 
-  print("Unable to read camera feed")
+  print("No podemos leer tu camara, LO SENTIMOS")
 frame_width = int(cap.get(3))
 frame_height = int(cap.get(4))
 
@@ -17,9 +18,9 @@ while(True):
     cv2.imshow('Video Original',original)
     cv2.waitKey(1)
     finded = False
-    if  0xFF == ord('q'):
+    if  keyboard.is_pressed('q'):
       break
-    if out%256 == 32:
+    if keyboard.is_pressed('s'):
         # SPACE pressed
         imgRef=cv2.imwrite("Referencia.jpg", out)
         finded = True
@@ -34,10 +35,8 @@ while(True):
       loc = np.where( res >= threshold)
       for pt in zip(*loc[::-1]):
         cv2.rectangle(out, pt, (pt[0] + w, pt[1] + h), (0,0,255), 2)
-        
-
-    cv2.imshow('Resultado',out)
-    cv2.waitKey(1)
+      cv2.imshow('Resultado',out)
+      cv2.waitKey(1)
   else:
     break 
 cap.release()
