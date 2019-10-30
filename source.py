@@ -55,7 +55,7 @@ while(True):
         cv2.waitKey(1)
     if  keyboard.is_pressed('q'):
       break
-    if keyboard.is_pressed('s'):
+    if keyboard.is_pressed('1'):
         # SPACE pressed
         template = cv2.cvtColor(original, cv2.COLOR_BGR2GRAY)
         
