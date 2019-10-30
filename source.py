@@ -59,7 +59,7 @@ while(True):
         # SPACE pressed
         template = cv2.cvtColor(original, cv2.COLOR_BGR2GRAY)
         
-        print("hizo algo")
+        print("TOMO CAPTURA")
         finded = True
     if finded:
       cv2.destroyWindow('Video Original')
