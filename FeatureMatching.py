@@ -3,6 +3,9 @@ import numpy as np
 import keyboard
 from matplotlib import pyplot as plt
 cap = cv2.VideoCapture(0)
+MIN_MATCH_COUNT = 4
+
+orb = cv2.ORB_create()
  
 if (cap.isOpened() == False): 
   print("No podemos leer tu camara, LO SENTIMOS")
@@ -53,23 +56,46 @@ def mouse_crop(event, x, y, flags, param):
             if recorte1 == True:
                 templateFull = oriImage[refPoint[0][1]:refPoint[1][1], refPoint[0][0]:refPoint[1][0]]
                 cv2.destroyWindow('Objeto 1')
+                img_name = "Cropped_{}".format(contObj)
+                cv2.imshow(img_name, templateFull)
             if recorte2 == True:
                 templateFull2 = oriImage[refPoint[0][1]:refPoint[1][1], refPoint[0][0]:refPoint[1][0]]
                 cv2.destroyWindow('Objeto 2')
+                img_name = "Cropped_{}".format(contObj)
+                cv2.imshow(img_name, templateFull2)
             if recorte3 == True:
                 templateFull3 = oriImage[refPoint[0][1]:refPoint[1][1], refPoint[0][0]:refPoint[1][0]]
                 cv2.destroyWindow('Objeto 3')
+                img_name = "Cropped_{}".format(contObj)
+                cv2.imshow(img_name, templateFull3)
             if recorte4 == True:
                 templateFull4 = oriImage[refPoint[0][1]:refPoint[1][1], refPoint[0][0]:refPoint[1][0]]
                 cv2.destroyWindow('Objeto 4')
-            img_name = "Cropped_{}".format(contObj)
-            cv2.imshow(img_name, templateFull)
+                img_name = "Cropped_{}".format(contObj)
+                cv2.imshow(img_name, templateFull4)
             recorte1= False
             recorte2= False
             recorte3= False
             recorte4 = False
             if contObj >= 4:
                 cropped=True
+
+def Matching(imgOriginal, imgCaptura):
+    kptsOriginal, descsOriginal = orb.detectAndCompute(imgOriginal,None)
+    kptsCaptura, descsCaptura = orb.detectAndCompute(imgCaptura,None)
+
+    bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
+    matches = bf.match(descsOriginal, descsCaptura)
+    dmatches = sorted(matches, key = lambda x:x.distance)
+
+    src_pts  = np.float32([kptsOriginal[m.queryIdx].pt for m in dmatches]).reshape(-1,1,2)
+    dst_pts  = np.float32([kptsCaptura[m.trainIdx].pt for m in dmatches]).reshape(-1,1,2)
+
+    M, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC,5.0)
+    h,w = imgOriginal.shape[:2]
+    pts = np.float32([ [0,0],[0,h-1],[w-1,h-1],[w-1,0] ]).reshape(-1,1,2)
+    dst = cv2.perspectiveTransform(pts,M)
+    return dst
  
 while(True):
   ret, original = cap.read()
@@ -103,7 +129,7 @@ while(True):
 
     if keyboard.is_pressed('2'):
         template2 = cv2.cvtColor(original, cv2.COLOR_BGR2GRAY)
-        oriImage= template.copy()
+        oriImage= template2.copy()
         recorte2 = True 
 
     if recorte2 == True:
@@ -123,7 +149,7 @@ while(True):
 
     if keyboard.is_pressed('3'):
         template3 = cv2.cvtColor(original, cv2.COLOR_BGR2GRAY)
-        oriImage= template.copy()
+        oriImage= template3.copy()
         recorte3 = True 
     
     if recorte3 == True:
@@ -143,7 +169,7 @@ while(True):
 
     if keyboard.is_pressed('4'):
         template4 = cv2.cvtColor(original, cv2.COLOR_BGR2GRAY)
-        oriImage= template.copy()
+        oriImage= template4.copy()
         recorte4 = True 
     
     if recorte4 == True:
@@ -168,17 +194,29 @@ while(True):
     if finded:
       cv2.destroyWindow('Video Original')
       
-      img_rgb= original.copy()
       img_gray = cv2.cvtColor(original, cv2.COLOR_BGR2GRAY)
-      
-      if cropped:
-        res = cv2.matchTemplate(img_gray,templateFull,cv2.TM_CCOEFF_NORMED)
-        threshold = 0.8
-        loc = np.where( res >= threshold)
-        for pt in zip(*loc[::-1]):
-          cv2.rectangle(img_rgb, pt, (pt[0] + w, pt[1] + h), (0,0,255), 2)
-        
-        cv2.imshow('Resultado',img_rgb)
+      img_rgb= img_gray.copy()
+      img_rgb2 = img_gray.copy()
+      img_rgb3 = img_gray.copy()
+      img_rgb4 = img_gray.copy()
+            
+      if cropped:       
+        resultado1 = Matching(img_rgb, templateFull)
+        resultado2 = Matching(img_rgb2, templateFull2)
+        resultado3 = Matching(img_rgb3, templateFull3)
+        resultado4 = Matching(img_rgb4, templateFull4)
+
+        frame1 = cv2.polylines(img_rgb, [np.int32(resultado1)], True, (0,0,255), 1, cv2.LINE_AA)
+        cv2.imshow("ENCONTRADO MATCHING CON OBJ 1", frame1)
+
+        frame2 = cv2.polylines(img_rgb, [np.int32(resultado2)], True, (0,0,255), 1, cv2.LINE_AA)
+        cv2.imshow("ENCONTRADO MATCHING CON OBJ 2", frame2)
+
+        frame3 = cv2.polylines(img_rgb, [np.int32(resultado3)], True, (0,0,255), 1, cv2.LINE_AA)
+        cv2.imshow("ENCONTRADO MATCHING CON OBJ 3", frame3)
+
+        frame4 = cv2.polylines(img_rgb, [np.int32(resultado4)], True, (0,0,255), 1, cv2.LINE_AA)
+        cv2.imshow("ENCONTRADO MATCHING CON OBJ 4", frame4)
       
       cv2.waitKey(1)
   else:
