@@ -85,16 +85,10 @@ def Matching(imgOriginal, imgCaptura):
     kptsCaptura, descsCaptura = orb.detectAndCompute(imgCaptura,None)
 
     bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
-    matches = bf.match(descsOriginal, descsCaptura)
+    matches = bf.match(descsCaptura, descsOriginal)
     dmatches = sorted(matches, key = lambda x:x.distance)
 
-    src_pts  = np.float32([kptsOriginal[m.queryIdx].pt for m in dmatches]).reshape(-1,1,2)
-    dst_pts  = np.float32([kptsCaptura[m.trainIdx].pt for m in dmatches]).reshape(-1,1,2)
-
-    M, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC,5.0)
-    h,w = imgOriginal.shape[:2]
-    pts = np.float32([ [0,0],[0,h-1],[w-1,h-1],[w-1,0] ]).reshape(-1,1,2)
-    dst = cv2.perspectiveTransform(pts,M)
+    dst = cv2.drawMatches(imgCaptura,kptsCaptura,imgOriginal,kptsOriginal,matches[:10],None,flags=cv2.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
     return dst
  
 while(True):
@@ -201,22 +195,15 @@ while(True):
       img_rgb4 = img_gray.copy()
             
       if cropped:       
-        resultado1 = Matching(img_rgb, templateFull)
-        resultado2 = Matching(img_rgb2, templateFull2)
-        resultado3 = Matching(img_rgb3, templateFull3)
-        resultado4 = Matching(img_rgb4, templateFull4)
-
-        frame1 = cv2.polylines(img_rgb, [np.int32(resultado1)], True, (0,0,255), 1, cv2.LINE_AA)
-        cv2.imshow("ENCONTRADO MATCHING CON OBJ 1", frame1)
-
-        frame2 = cv2.polylines(img_rgb, [np.int32(resultado2)], True, (0,0,255), 1, cv2.LINE_AA)
-        cv2.imshow("ENCONTRADO MATCHING CON OBJ 2", frame2)
-
-        frame3 = cv2.polylines(img_rgb, [np.int32(resultado3)], True, (0,0,255), 1, cv2.LINE_AA)
-        cv2.imshow("ENCONTRADO MATCHING CON OBJ 3", frame3)
-
-        frame4 = cv2.polylines(img_rgb, [np.int32(resultado4)], True, (0,0,255), 1, cv2.LINE_AA)
-        cv2.imshow("ENCONTRADO MATCHING CON OBJ 4", frame4)
+        resultado1 = Matching(img_gray, templateFull)
+        resultado2 = Matching(img_gray, templateFull2)
+        resultado3 = Matching(img_gray, templateFull3)
+        resultado4 = Matching(img_gray, templateFull4)
+        cv2.imshow("ENCONTRADO MATCHING CON OBJ 1", resultado1)
+        cv2.imshow("ENCONTRADO MATCHING CON OBJ 2", resultado2)
+        cv2.imshow("ENCONTRADO MATCHING CON OBJ 3", resultado3)
+        cv2.imshow("ENCONTRADO MATCHING CON OBJ 4", resultado4)
+        cv2.imshow("ori", img_gray)
       
       cv2.waitKey(1)
   else:
