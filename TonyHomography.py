@@ -35,8 +35,8 @@ pts1 = np.float32([[0,0],[0,rows],[cols,0],[cols,rows]])
 for pts in pts1:
     circ = plot.Circle(pts,10)
 #Seleccionamos cuatro putnos de destino
-x = 280
-pts2 = np.float32([[0,0],[x,rows],[cols,0],[cols-x,rows]])
+x = 100
+pts2 = np.float32([[0,150],[x,rows],[cols,0],[cols-x,rows]])
 
 #Se calcula la matriz para la corrección de perspectiva
 M = cv2.getPerspectiveTransform(pts1,pts2)
