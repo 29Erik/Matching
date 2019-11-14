@@ -2,22 +2,22 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
-imgLeft = cv2.imread('left1.jpg')
-img1 = cv2.cvtColor(imgLeft,cv2.COLOR_BGR2GRAY)
-imgRight = cv2.imread('right1.jpg')
-img2 = cv2.cvtColor(imgRight,cv2.COLOR_BGR2GRAY)
+ImagenDerecha = cv2.imread('right1.jpg')
+img1 = cv2.cvtColor(ImagenDerecha,cv2.COLOR_BGR2GRAY)
+ImagenIzquierda = cv2.imread('left1.jpg')
+img2 = cv2.cvtColor(ImagenIzquierda,cv2.COLOR_BGR2GRAY)
 #############################################################################
-plt.subplot(231),plt.imshow(imgLeft),plt.title('Original Izquierda')
-plt.subplot(232),plt.imshow(imgRight),plt.title('Original Derecha')
+plt.subplot(231),plt.imshow(ImagenDerecha),plt.title('Original Derecha')
+plt.subplot(232),plt.imshow(ImagenIzquierda),plt.title('Original Izquierda')
 #############################################################################
 
 sift = cv2.xfeatures2d.SIFT_create()
 # find key points
 kp1, des1 = sift.detectAndCompute(img1,None)
 kp2, des2 = sift.detectAndCompute(img2,None)
-PtsKey = cv2.drawKeypoints(imgLeft,kp1,None)
+PtsKey = cv2.drawKeypoints(ImagenDerecha,kp1,None)
 #############################################################################
-plt.subplot(233),plt.imshow(PtsKey),plt.title('Pts clave Izq.')
+plt.subplot(233),plt.imshow(PtsKey),plt.title('Pts clave Der.')
 #############################################################################
 #FLANN_INDEX_KDTREE = 0
 match = cv2.BFMatcher()
@@ -32,7 +32,7 @@ draw_params = dict(matchColor=(0,255,0),
                        singlePointColor=None,
                        flags=2)
 
-MAtches = cv2.drawMatches(imgLeft,kp1,imgRight,kp2,good,None,**draw_params)
+MAtches = cv2.drawMatches(ImagenDerecha,kp1,ImagenIzquierda,kp2,good,None,**draw_params)
 #############################################################################
 plt.subplot(234),plt.imshow(MAtches),plt.title('Pts clave Imagen.')
 #############################################################################
@@ -53,14 +53,15 @@ if len(good) > MIN_MATCH_COUNT:
 else:
     print("No se encuentra suficientes puntos de match - %d/%d", (len(good)/MIN_MATCH_COUNT))
 
-dst = cv2.warpPerspective(imgLeft,M,(imgRight.shape[1] + imgLeft.shape[1], imgRight.shape[0]))
-dst[0:imgRight.shape[0],0:imgRight.shape[1]] = imgRight
+dst = cv2.warpPerspective(ImagenDerecha,M,(ImagenIzquierda.shape[1] + ImagenDerecha.shape[1], ImagenIzquierda.shape[0]))
+dst[0:ImagenIzquierda.shape[0],0:ImagenIzquierda.shape[1]] = ImagenIzquierda
 
 def trim(frame):
     #crop top
     if not np.sum(frame[0]):
         return trim(frame[1:])
     #crop top
+
     if not np.sum(frame[-1]):
         return trim(frame[:-2])
     #crop top
