@@ -9,7 +9,8 @@ numDisparities = 16
 blockSize = 15
 
 #Parametro de control para las fotos
-cont = 0
+der = False
+izq = False
 
 #Lectura de la camara
 cam = cv2.VideoCapture(0)
@@ -31,12 +32,12 @@ while(True):
         if keyboard.is_pressed('d'):
             ImageDer= cv2.imwrite('Derecha.jpg', original)
             ImageDer= cv2.imread('Derecha.jpg')
-            cont += 1    
+            der = True    
         if keyboard.is_pressed('i'):
             ImageIzq= cv2.imwrite('Izquierda.jpg', original)
             ImageIzq= cv2.imread('Izquierda.jpg')
-            cont += 1
-        if cont == 2:
+            izq = True
+        if der == True and izq == True:
             #Encuentra los puntos clave y descriptores con SIFT
             kp1, des1 = sift.detectAndCompute(ImageIzq,None)
             kp2, des2 = sift.detectAndCompute(ImageDer,None)
@@ -68,9 +69,10 @@ while(True):
             def drawlines(ImageIzq,ImageDer,lines,pts1,pts2):
                 ''' ImageIzq - image on which we draw the epilines for the points in ImageDer
                     lines - corresponding epilines '''
-                r,c = ImageIzq.shape
-                ImageIzq = cv2.cvtColor(ImageIzq,cv2.COLOR_GRAY2BGR)
-                ImageDer = cv2.cvtColor(ImageDer,cv2.COLOR_GRAY2BGR)
+                r = ImageIzq.shape[0]
+                c = ImageIzq.shape[1]
+                ImageIzq = cv2.cvtColor(ImageIzq,cv2.COLOR_BGR2GRAY)
+                ImageDer = cv2.cvtColor(ImageDer,cv2.COLOR_BGR2GRAY)
                 for r,pt1,pt2 in zip(lines,pts1,pts2):
                     color = tuple(np.random.randint(0,255,3).tolist())
                     x0,y0 = map(int, [0, -r[2]/r[1] ])
