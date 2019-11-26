@@ -20,12 +20,12 @@ while(True):
             break
         if keyboard.is_pressed('d'):
             template = cv2.cvtColor(original, cv2.COLOR_BGR2GRAY)
-            oriImageDer= template.copy()
+            ImagenDerecha= template.copy()
             img1 = cv2.cvtColor(oriImageDer,cv2.COLOR_BGR2GRAY)
             cont += 1    
         if keyboard.is_pressed('i'):
             template = cv2.cvtColor(original, cv2.COLOR_BGR2GRAY)
-            oriImageIzq= template.copy()
+            ImagenIzquierda= template.copy()
             img2 = cv2.cvtColor(oriImageIzq,cv2.COLOR_BGR2GRAY)
             cont += 1
 

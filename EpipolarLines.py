@@ -3,10 +3,9 @@ import cv2
 import numpy as np
 from matplotlib import pyplot as plot
 
+#Parametros para la matriz de dispaeriedad
 numDisparities = 16
 blockSize = 15
-
-
 
 # Lectura de imagenes
 img1 = cv2.imread('left.jpg',0) #queryimage # left image
