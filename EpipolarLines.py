@@ -1,12 +1,23 @@
+# Imports
 import cv2
 import numpy as np
-from matplotlib import pyplot as plt
+from matplotlib import pyplot as plot
+
+#Parametros para la matriz de dispaeriedad
+numDisparities = 16
+blockSize = 15
+
+# Lectura de imagenes
 img1 = cv2.imread('left.jpg',0) #queryimage # left image
 img2 = cv2.imread('right.jpg',0) #trainimage # right image
+
+#Inicializacion de SIFT
 sift = cv2.xfeatures2d.SIFT_create()
+
 #Encuentra los puntos clave y descriptores con SIFT
 kp1, des1 = sift.detectAndCompute(img1,None)
 kp2, des2 = sift.detectAndCompute(img2,None)
+
 # FLANN parametros
 FLANN_INDEX_KDTREE = 0
 index_params = dict(algorithm = FLANN_INDEX_KDTREE, trees = 5)
@@ -57,6 +68,16 @@ img5,img6 = drawlines(img1,img2,lines1,pts1,pts2)
 lines2 = cv2.computeCorrespondEpilines(pts1.reshape(-1,1,2), 1,F)
 lines2 = lines2.reshape(-1,3)
 img3,img4 = drawlines(img2,img1,lines2,pts2,pts1)
-plt.subplot(121),plt.imshow(img5)
-plt.subplot(122),plt.imshow(img3)
-plt.show()
+
+#Matriz de dispaeriedad
+stereo = cv2.StereoBM_create(numDisparities, blockSize)
+disparity = stereo.compute(img1,img2)
+
+# Display images
+plot.subplot(131), plot.imshow(img5),plot.title("Lineas epipolares Izq.")
+plot.xticks([]), plot.yticks([])
+plot.subplot(132), plot.imshow(img3),plot.title("Lineas epipolares Der.")
+plot.xticks([]), plot.yticks([])
+plot.subplot(133), plot.imshow(disparity),plot.title("Mapa de dispariedad")
+plot.xticks([]), plot.yticks([])
+plot.show()
