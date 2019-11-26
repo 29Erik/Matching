@@ -31,11 +31,11 @@ while(True):
             break
         if keyboard.is_pressed('d'):
             ImageDer= cv2.imwrite('Derecha.jpg', original)
-            ImageDer= cv2.imread('Derecha.jpg')
+            ImageDer= cv2.imread('Derecha.jpg',0)
             der = True    
         if keyboard.is_pressed('i'):
             ImageIzq= cv2.imwrite('Izquierda.jpg', original)
-            ImageIzq= cv2.imread('Izquierda.jpg')
+            ImageIzq= cv2.imread('Izquierda.jpg',0)
             izq = True
         if der == True and izq == True:
             #Encuentra los puntos clave y descriptores con SIFT
@@ -71,8 +71,8 @@ while(True):
                     lines - corresponding epilines '''
                 r = ImageIzq.shape[0]
                 c = ImageIzq.shape[1]
-                ImageIzq = cv2.cvtColor(ImageIzq,cv2.COLOR_BGR2GRAY)
-                ImageDer = cv2.cvtColor(ImageDer,cv2.COLOR_BGR2GRAY)
+                ImageIzq = cv2.cvtColor(ImageIzq,cv2.COLOR_GRAY2BGR)
+                ImageDer = cv2.cvtColor(ImageDer,cv2.COLOR_GRAY2BGR)
                 for r,pt1,pt2 in zip(lines,pts1,pts2):
                     color = tuple(np.random.randint(0,255,3).tolist())
                     x0,y0 = map(int, [0, -r[2]/r[1] ])
@@ -99,11 +99,11 @@ while(True):
             disparity = stereo.compute(ImageIzq,ImageDer)
 
             # Display images
-            plot.subplot(131), plot.imshow(img5),plot.title("Lineas epipolares Izq.")
+            plot.subplot(211), plot.imshow(img5),plot.title("Lineas epipolares Izq.")
             plot.xticks([]), plot.yticks([])
-            plot.subplot(132), plot.imshow(img3),plot.title("Lineas epipolares Der.")
+            plot.subplot(212), plot.imshow(img3),plot.title("Lineas epipolares Der.")
             plot.xticks([]), plot.yticks([])
-            plot.subplot(133), plot.imshow(disparity),plot.title("Mapa de dispariedad")
+            plot.subplot(213), plot.imshow(disparity),plot.title("Mapa de dispariedad")
             plot.xticks([]), plot.yticks([])
             plot.show()
     else:
