@@ -99,11 +99,11 @@ while(True):
             disparity = stereo.compute(ImageIzq,ImageDer)
 
             # Display images
-            plot.subplot(211), plot.imshow(img5),plot.title("Lineas epipolares Izq.")
+            plot.subplot(221), plot.imshow(img5),plot.title("Lineas epipolares Izq.")
             plot.xticks([]), plot.yticks([])
-            plot.subplot(212), plot.imshow(img3),plot.title("Lineas epipolares Der.")
+            plot.subplot(222), plot.imshow(img3),plot.title("Lineas epipolares Der.")
             plot.xticks([]), plot.yticks([])
-            plot.subplot(213), plot.imshow(disparity),plot.title("Mapa de dispariedad")
+            plot.subplot(223), plot.imshow(disparity),plot.title("Mapa de dispariedad")
             plot.xticks([]), plot.yticks([])
             plot.show()
     else:

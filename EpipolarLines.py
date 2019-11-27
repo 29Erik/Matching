@@ -69,7 +69,7 @@ lines2 = cv2.computeCorrespondEpilines(pts1.reshape(-1,1,2), 1,F)
 lines2 = lines2.reshape(-1,3)
 img3,img4 = drawlines(img2,img1,lines2,pts2,pts1)
 
-#Matriz de dispaeriedad
+#Matriz de dispariedad
 stereo = cv2.StereoBM_create(numDisparities, blockSize)
 disparity = stereo.compute(img1,img2)
 
